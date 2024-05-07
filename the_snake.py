@@ -41,7 +41,6 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-# Тут опишите все классы игры.
 class GameObject:
     """Базовый класс, содержащий общий атрибуты игровых объектов"""
 
@@ -138,18 +137,15 @@ class Snake(GameObject):
         if self.positions.count(new_head_position) > 1:
             self.reset()
 
-    # Метод draw класса Snake
     def draw(self):
         """Отрисовка змейки"""
         for position in self.positions:
             rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-        # Отрисовка головы змейки
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, head_rect)
         pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
-        # Затирание последнего сегмента
         if self.last and self.last != self.positions[0]:
             last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
@@ -174,9 +170,7 @@ def handle_keys(game_object):
 
 def main():
     """Главная функция"""
-    # Инициализация PyGame:
     pygame.init()
-    # Тут нужно создать экземпляры классов.
     snake = Snake()
     apple = Apple()
 
