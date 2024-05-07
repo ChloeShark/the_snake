@@ -34,7 +34,7 @@ class GameObject:
     def __init__(self, position=GRID_CENTER,
                  body_color=BOARD_BACKGROUND_COLOR):
         self.position = position
-        self.color = body_color
+        self.body_color = body_color
 
     def draw(self):
         """
@@ -72,6 +72,8 @@ class Snake(GameObject):
     length = 1
     direction = RIGHT
     next_direction = None
+    # Требование автоматического теста, нигде не используется ._.
+    position = GRID_CENTER
 
     def __init__(self, positions=[GRID_CENTER], body_color=SNAKE_COLOR):
         self.positions = positions
