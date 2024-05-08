@@ -7,21 +7,29 @@ GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
 GRID_CENTER = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+
 UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 DIRECTIONS_SEQUENCE = [UP, DOWN, LEFT, RIGHT]
+
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
+
 SPEED = 10
-CONTROLS_DICTIONARY = {
-    (pygame.K_UP, DOWN): UP,
-    (pygame.K_DOWN, UP): DOWN,
-    (pygame.K_LEFT, RIGHT): LEFT,
-    (pygame.K_RIGHT, LEFT): RIGHT
+
+TURNS = {
+    (pygame.K_UP, LEFT): UP,
+    (pygame.K_UP, RIGHT): UP,
+    (pygame.K_DOWN, LEFT): DOWN,
+    (pygame.K_DOWN, RIGHT): DOWN,
+    (pygame.K_LEFT, UP): LEFT,
+    (pygame.K_LEFT, DOWN): LEFT,
+    (pygame.K_RIGHT, UP): RIGHT,
+    (pygame.K_RIGHT, DOWN): RIGHT
 }
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 pygame.display.set_caption('Змейка')
@@ -46,16 +54,17 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко"""
 
-    def __init__(self, position=GRID_CENTER, body_color=APPLE_COLOR):
-        self.position = position
-        self.body_color = body_color
+    def __init__(self, position=GRID_CENTER, body_color=APPLE_COLOR,
+                 occupied_cells=None):
+        self.occupied_cells = occupied_cells or []
+        super().__init__(position, body_color)
 
-    def randomize_position(self, occupied_cells):
+    def randomize_position(self):
         """Генерирует рандомные координаты для появления яблока на поле"""
         while True:
             new_position = (randint(0, GRID_WIDTH - GRID_SIZE) * GRID_SIZE,
                             randint(0, GRID_HEIGHT - GRID_SIZE) * GRID_SIZE)
-            if new_position not in occupied_cells:
+            if new_position not in self.occupied_cells:
                 self.position = new_position
                 break
 
@@ -69,15 +78,14 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс, описывающий змейку"""
 
-    length = 1
-    direction = RIGHT
-    next_direction = None
-    # Требование автоматического теста, нигде не используется ._.
-    position = GRID_CENTER
-
-    def __init__(self, positions=[GRID_CENTER], body_color=SNAKE_COLOR):
+    def __init__(self, position=GRID_CENTER, positions=[GRID_CENTER],
+                 body_color=SNAKE_COLOR,
+                 length=1, direction=RIGHT, next_direction=None):
+        super().__init__(position, body_color)
+        self.length = length
+        self.direction = direction
+        self.next_direction = next_direction
         self.positions = positions
-        self.body_color = body_color
         self.last = None
 
     def update_direction(self):
@@ -131,17 +139,16 @@ def handle_keys(game_object):
             pygame.quit()
             raise SystemExit
         elif event.type == pygame.KEYDOWN:
-            for key, value in CONTROLS_DICTIONARY.items():
-                if event.key == key[0] and game_object.direction != key[1]:
-                    game_object.next_direction = value
+            game_object.next_direction = TURNS.get((event.key,
+                                                    game_object.direction))
 
 
 def main():
     """Главная функция"""
     pygame.init()
     snake = Snake()
-    apple = Apple()
-    apple.randomize_position(snake.positions)
+    apple = Apple(occupied_cells=snake.positions)
+    apple.randomize_position()
 
     while True:
         screen.fill(BOARD_BACKGROUND_COLOR)
@@ -151,7 +158,7 @@ def main():
         snake.move()
         if snake.get_head_position() == apple.position:
             snake.length += 1
-            apple.randomize_position(snake.positions)
+            apple.randomize_position()
         if snake.positions.count(snake.get_head_position()) > 1:
             snake.reset()
         apple.draw()
