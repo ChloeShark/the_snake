@@ -18,6 +18,7 @@ BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
+JUNKFOOD_COLOR = (105, 75, 0)
 
 SPEED = 10
 
@@ -70,6 +71,30 @@ class Apple(GameObject):
 
     def draw(self):
         """Отрисовывает яблоко на экране"""
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+
+class JunkFood(GameObject):
+    """Класс, описывающий вредную еду"""
+
+    def __init__(self, position=GRID_CENTER, body_color=JUNKFOOD_COLOR,
+                 occupied_cells=None):
+        self.occupied_cells = occupied_cells or []
+        super().__init__(position, body_color)
+
+    def randomize_position(self):
+        """Генерирует рандомные координаты для появления вредной еды на поле"""
+        while True:
+            new_position = (randint(0, GRID_WIDTH - GRID_SIZE) * GRID_SIZE,
+                            randint(0, GRID_HEIGHT - GRID_SIZE) * GRID_SIZE)
+            if new_position not in self.occupied_cells:
+                self.position = new_position
+                break
+
+    def draw(self):
+        """Отрисовывает вредную еду на экране"""
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
@@ -141,14 +166,27 @@ def handle_keys(game_object):
         elif event.type == pygame.KEYDOWN:
             game_object.next_direction = TURNS.get((event.key,
                                                     game_object.direction))
+            
+
+def get_occupied_cells(snake, apple, burger):
+    """Возвращает занятые ячейки на поле"""
+    occupied_cells = []
+    occupied_cells.extend(snake.positions)
+    occupied_cells.append(apple.position)
+    occupied_cells.append(burger.position)
+    return occupied_cells
 
 
 def main():
     """Главная функция"""
     pygame.init()
     snake = Snake()
-    apple = Apple(occupied_cells=snake.positions)
+    apple = Apple()
+    burger = JunkFood()
     apple.randomize_position()
+    burger.randomize_position()
+    apple.occupied_cells = get_occupied_cells(snake, apple, burger)
+    burger.occupied_cells = get_occupied_cells(snake, apple, burger)
 
     while True:
         screen.fill(BOARD_BACKGROUND_COLOR)
@@ -159,10 +197,19 @@ def main():
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position()
+        elif snake.get_head_position() == burger.position:
+            snake.length -= 1
+            snake.positions.pop()
+            burger.randomize_position()
+            if snake.length < 1:
+                snake.reset()
         if snake.positions.count(snake.get_head_position()) > 1:
             snake.reset()
+        apple.occupied_cells = get_occupied_cells(snake, apple, burger)
+        burger.occupied_cells = get_occupied_cells(snake, apple, burger)
         apple.draw()
         snake.draw()
+        burger.draw()
         pygame.display.update()
 
 
