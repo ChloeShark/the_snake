@@ -1,0 +1,34 @@
+import pygame
+
+SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
+GRID_SIZE = 20
+GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
+GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
+GRID_CENTER = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+
+UP = (0, -1)
+DOWN = (0, 1)
+LEFT = (-1, 0)
+RIGHT = (1, 0)
+DIRECTIONS_SEQUENCE = [UP, DOWN, LEFT, RIGHT]
+
+BOARD_BACKGROUND_COLOR = (0, 0, 0)
+BORDER_COLOR = (93, 216, 228)
+APPLE_COLOR = (255, 0, 0)
+SNAKE_COLOR = (0, 255, 0)
+JUNKFOOD_COLOR = (105, 75, 0)
+ROCK_COLOR = (56, 56, 56)
+
+SPEED = 10
+
+TURNS = {
+    (pygame.K_UP, LEFT): UP,
+    (pygame.K_UP, RIGHT): UP,
+    (pygame.K_DOWN, LEFT): DOWN,
+    (pygame.K_DOWN, RIGHT): DOWN,
+    (pygame.K_LEFT, UP): LEFT,
+    (pygame.K_LEFT, DOWN): LEFT,
+    (pygame.K_RIGHT, UP): RIGHT,
+    (pygame.K_RIGHT, DOWN): RIGHT
+}
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
