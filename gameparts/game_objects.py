@@ -30,9 +30,9 @@ class Apple(GameObject):
     def randomize_position(self):
         """Генерирует рандомные координаты для появления яблока на поле"""
         while True:
-            new_position = (randint(0, const.GRID_WIDTH - const.GRID_SIZE)
+            new_position = (randint(1, const.GRID_WIDTH - 1)
                             * const.GRID_SIZE,
-                            randint(0, const.GRID_HEIGHT - const.GRID_SIZE)
+                            randint(1, const.GRID_HEIGHT - 1)
                             * const.GRID_SIZE)
             if new_position not in self.occupied_cells:
                 self.position = new_position
@@ -57,9 +57,9 @@ class JunkFood(GameObject):
     def randomize_position(self):
         """Генерирует рандомные координаты для появления вредной еды на поле"""
         while True:
-            new_position = (randint(0, const.GRID_WIDTH - const.GRID_SIZE)
+            new_position = (randint(1, const.GRID_WIDTH - 1)
                             * const.GRID_SIZE,
-                            randint(0, const.GRID_HEIGHT - const.GRID_SIZE)
+                            randint(1, const.GRID_HEIGHT - 1)
                             * const.GRID_SIZE)
             if new_position not in self.occupied_cells:
                 self.position = new_position
@@ -144,9 +144,9 @@ class Rock(GameObject):
     def randomize_position(self):
         """Генерирует рандомные координаты для появления препядствия на поле"""
         while True:
-            new_position = (randint(0, const.GRID_WIDTH - const.GRID_SIZE)
+            new_position = (randint(1, const.GRID_WIDTH - 1)
                             * const.GRID_SIZE,
-                            randint(0, const.GRID_HEIGHT - const.GRID_SIZE)
+                            randint(1, const.GRID_HEIGHT - 1)
                             * const.GRID_SIZE)
             if new_position not in self.occupied_cells:
                 self.position = new_position
